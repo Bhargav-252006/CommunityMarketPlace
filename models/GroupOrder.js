@@ -20,6 +20,16 @@ const groupOrderSchema = new mongoose.Schema({
         enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
         default: 'Pending'
     },
+    paymentStatus: {
+        type: String,
+        enum: ['Pending', 'Paid', 'Failed', 'Refunded'],
+        default: 'Pending'
+    },
+    paymentMethod: {
+        type: String,
+        enum: ['Cash', 'Online', 'Wallet', 'Bank Transfer'],
+        default: 'Bank Transfer'
+    },
     createdAt: {
         type: Date,
         default: Date.now

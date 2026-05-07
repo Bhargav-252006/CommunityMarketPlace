@@ -12,6 +12,7 @@ The Community Marketplace platform is a web application designed to facilitate c
 
 ![System Architecture](./public/img/system_architecture.svg)
 
+
 ## System Components
 
 ### Frontend Layer

@@ -1,13 +1,13 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const router = express.Router();
 const CommunityUser = require('../models/CommunityUser');
 const VendorUser = require('../models/VendorUser');
 const Community = require('../models/Community');
 const communityManagement = require('./communityManagement');
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
-const { isAuthenticated, isVendor, isCommunityAdmin } = require('../middleware/authMiddleware');
+
+
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -433,18 +433,29 @@ router.post('/community/login', async (req, res) => {
             });
         }
 
+        // Verify admin key BEFORE regenerating the session if user is an admin
+        if (user.isAdmin) {
+            const communityAdminKey = community.adminKey;
+            if (!adminKey || adminKey !== communityAdminKey) {
+                return res.render('communityLogin', {
+                    message: adminKey ? 'Invalid admin key. Please try again.' : 'Admin key is required for admin login.',
+                    email: email,
+                    requireAdminKey: true,
+                    communities: await Community.find()
+                });
+            }
+        }
+
         // Regenerate session to prevent session fixation
         req.session.regenerate((err) => {
             if (err) {
                 console.error('Error regenerating session:', err);
-                // Handle error without using async/await inside this callback
                 Community.find().then(communities => {
                     return res.render('communityLogin', {
                         message: 'Login error. Please try again.',
                         communities: communities
                     });
                 }).catch(findErr => {
-                    console.error('Error finding communities:', findErr);
                     return res.render('communityLogin', {
                         message: 'Login error. Please try again.',
                         communities: []
@@ -469,7 +480,6 @@ router.post('/community/login', async (req, res) => {
                             communities: communities
                         });
                     }).catch(findErr => {
-                        console.error('Error finding communities:', findErr);
                         return res.render('communityLogin', {
                             message: 'Login error. Please try again.',
                             communities: []
@@ -480,50 +490,10 @@ router.post('/community/login', async (req, res) => {
 
                 // Redirect based on user type
                 if (user.isAdmin) {
-                    // If admin key is provided, verify it
-                    if (adminKey) {
-                        // Get the community's admin key
-                        const communityAdminKey = community.adminKey;
-
-                        // If the admin key doesn't match, show an error
-                        if (!communityAdminKey || adminKey !== communityAdminKey) {
-                            // Get communities before destroying session
-                            req.session.destroy((err) => {
-                                if (err) {
-                                    console.error('Error destroying session:', err);
-                                }
-
-                                return res.render('communityLogin', {
-                                    message: 'Invalid admin key. Please try again.',
-                                    email: email, // Preserve email for convenience
-                                    requireAdminKey: true,
-                                    communities: []
-                                });
-                            });
-                            return;
-                        }
-
-                        // Admin key verified, redirect to admin dashboard
-                        console.log('Admin login successful, redirecting to admin dashboard');
-                        return res.redirect('/admin/dashboard');
-                    } else {
-                        // Admin key is required but not provided
-                        req.session.destroy((err) => {
-                            if (err) {
-                                console.error('Error destroying session:', err);
-                            }
-
-                            return res.render('communityLogin', {
-                                message: 'Admin key is required for admin login.',
-                                email: email, // Preserve email for convenience
-                                requireAdminKey: true,
-                                communities: []
-                            });
-                        });
-                        return;
-                    }
+                    console.log('Admin login successful, redirecting to admin dashboard');
+                    return res.redirect('/admin/dashboard');
                 } else {
-                    // Regular user, no admin key needed
+                    // Regular user
                     console.log('Community user login successful, redirecting to dashboard');
                     return res.redirect('/dashboard');
                 }

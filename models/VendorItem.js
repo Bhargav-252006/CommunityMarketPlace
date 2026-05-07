@@ -57,6 +57,7 @@ const VendorItemSchema = new mongoose.Schema({
     unit: { type: String, required: true }, // e.g., kg, g, pcs, etc.
     imageUrl: { type: String },
     isAvailable: { type: Boolean, default: true },
+    minimumOrderQuantity: { type: Number, default: 1 }, // Ensure bulk threshold
     discount: { type: Number, default: 0 },
     expiryDate: { type: Date },
     brand: { type: String },

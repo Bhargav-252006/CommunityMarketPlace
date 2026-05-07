@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+
 const CommunityUser = require('../models/CommunityUser');
 const VendorUser = require('../models/VendorUser');
 

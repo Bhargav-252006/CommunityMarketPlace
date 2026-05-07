@@ -43,7 +43,9 @@ if (process.env.NODE_ENV === 'production') {
 // Start server
 const server = app.listen(PORT, () => {
     console.log(`[PRODUCTION] Server running on port ${PORT}`);
-    console.log(`MongoDB connected to: ${process.env.MONGO_URI.split('@')[1]}`); // Only log the host, not credentials
+    const mongoUri = process.env.MONGO_URI || '';
+    const displayHost = mongoUri.includes('@') ? mongoUri.split('@')[1] : mongoUri.split('//')[1] || 'localhost';
+    console.log(`MongoDB connected to: ${displayHost}`); // Only log the host, not credentials
 });
 
 // Handle graceful shutdown

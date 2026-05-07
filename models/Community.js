@@ -22,6 +22,13 @@ const CommunitySchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    orderDeadline: {
+        type: Date // When the current order aggregation window closes
+    },
+    minimumOrderAmount: {
+        type: Number,
+        default: 0 // Alert admin when this bulk order threshold is met
+    },
     createdAt: {
         type: Date,
         default: Date.now

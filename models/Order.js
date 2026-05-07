@@ -40,6 +40,16 @@ const orderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'GroupOrder'
     },
+    paymentStatus: {
+        type: String,
+        enum: ['Pending', 'Paid', 'Failed', 'Refunded'],
+        default: 'Pending'
+    },
+    paymentMethod: {
+        type: String,
+        enum: ['Cash', 'Online', 'Wallet'],
+        default: 'Cash'
+    },
     createdAt: {
         type: Date,
         default: Date.now
