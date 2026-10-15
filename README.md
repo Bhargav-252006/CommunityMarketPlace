@@ -55,8 +55,7 @@ Note: The repo includes `scripts/optimize-for-production.js` which validates `MO
 - Views (EJS): [views/](views/)
 - Public static assets / client JS: [public/](public/)
 - Deployment config: [render.yaml](render.yaml)
-- Interview explanation: [INTERVIEW_EXPLANATION.md](INTERVIEW_EXPLANATION.md)
-- Interview Q&A: [INTERVIEW_QA.md](INTERVIEW_QA.md)
+
 - Notification stub: [utils/notificationService.js](utils/notificationService.js)
 
 ## Deployment Notes
